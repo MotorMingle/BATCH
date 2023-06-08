@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/motormingle
+    username: motormingle
+    password: motormingle
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: false
+logging:
+  level:
+    root: error
