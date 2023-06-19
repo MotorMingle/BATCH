@@ -1,9 +1,7 @@
 package fr.motormingle.processor;
 
 import com.uber.h3core.H3Core;
-import fr.motormingle.model.Encounter;
-import fr.motormingle.model.Position;
-import fr.motormingle.model.Status;
+import fr.motormingle.entity.*;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
@@ -41,12 +39,18 @@ public class PositionProcessor implements ItemProcessor<List<Position>, List<Enc
                     Position position1 = positions.get(i);
                     Position position2 = positions.get(j);
                     Encounter encounter = new Encounter();
-                    encounter.setUserId1(position1.getUserId());
-                    encounter.setUserId2(position2.getUserId());
+                    UserPair userPair = new UserPair();
+                    userPair.setUserId1(position1.getUser().getId());
+                    userPair.setUserId2(position2.getUser().getId());
+                    encounter.setId(userPair);
+                    encounter.setUserId1(position1.getUser());
+                    encounter.setUserId2(position2.getUser());
                     encounter.setHash(h3Index);
-                    encounter.setDate(position1.getDate().toLocalDate());
-                    encounter.setCount(1);
-                    encounter.setStatus(Status.PENDING.toString());
+                    UserPairStats userPairStats = new UserPairStats();
+                    userPairStats.setUser1Status(EncounterStatus.PENDING);
+                    userPairStats.setUser2Status(EncounterStatus.PENDING);
+                    userPairStats.setDate(position1.getId().getDate().toLocalDate());
+                    encounter.setUserPairStats(userPairStats);
                     encounters.add(encounter);
                 }
             }

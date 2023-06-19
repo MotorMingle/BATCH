@@ -1,7 +1,7 @@
 package fr.motormingle.batch;
 
-import fr.motormingle.model.Encounter;
-import fr.motormingle.model.Position;
+import fr.motormingle.entity.Encounter;
+import fr.motormingle.entity.Position;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-@ComponentScan(basePackages = {"fr.motormingle.batch", "fr.motormingle.reader", "fr.motormingle.writer", "fr.motormingle.processor", "fr.motormingle.mapper"})
+@ComponentScan(basePackages = {"fr.motormingle.batch", "fr.motormingle.repository", "fr.motormingle.reader", "fr.motormingle.writer", "fr.motormingle.processor", "fr.motormingle.mapper", "fr.motormingle.model"})
 public class BatchConfiguration {
 
     @Autowired
@@ -48,8 +48,10 @@ public class BatchConfiguration {
 
     @Bean
     public void run() throws Exception {
-        LocalDateTime startDateTime = LocalDateTime.now().minusDays(1).withHour(18).withMinute(0).withSecond(0).withNano(0);
-        LocalDateTime endDateTime = LocalDateTime.now().withHour(18).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime startDateTime = LocalDateTime.of(2023, 6, 8, 14, 0, 0, 0);
+        LocalDateTime endDateTime = LocalDateTime.of(2023, 6, 8, 15, 0, 0, 0);
+//        LocalDateTime startDateTime = LocalDateTime.now().minusDays(1).withHour(18).withMinute(0).withSecond(0).withNano(0);
+//        LocalDateTime endDateTime = LocalDateTime.now().withHour(18).withMinute(0).withSecond(0).withNano(0);
 
         List<LocalDateTime> localDateTimes = generateDateTimeList(startDateTime, endDateTime);
         JobParametersBuilder parametersBuilder = new JobParametersBuilder();

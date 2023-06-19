@@ -1,16 +1,13 @@
 package fr.motormingle.reader;
 
-import fr.motormingle.mapper.PositionRowMapper;
-import fr.motormingle.model.Position;
+import fr.motormingle.entity.Position;
+import fr.motormingle.repository.PositionRepository;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.sql.DataSource;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,10 +15,7 @@ import java.util.List;
 public class PositionReader implements ItemReader<List<Position>>, StepExecutionListener {
 
     @Autowired
-    private PositionRowMapper positionRowMapper;
-
-    @Autowired
-    private DataSource datasource;
+    private PositionRepository positionRepository;
 
     private LocalDateTime localDateTime;
 
@@ -32,10 +26,10 @@ public class PositionReader implements ItemReader<List<Position>>, StepExecution
 
     @Override
     public List<Position> read() {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(datasource);
-        List<Position> result = jdbcTemplate.query("SELECT * FROM position WHERE date = to_timestamp(?, 'YYYY-MM-DD HH24:MI:SS.MS')", positionRowMapper, Timestamp.valueOf(localDateTime).toString());
-        jdbcTemplate.update("DELETE FROM position WHERE date = to_timestamp(?, 'YYYY-MM-DD HH24:MI:SS.MS')", Timestamp.valueOf(localDateTime).toString());
-        return result.size() == 0 ? null : result;
+        List<Position> result = positionRepository.findAllById_Date(localDateTime);
+        System.err.println("PositionReader.read() result = " + result);
+        positionRepository.deleteAllById_Date(localDateTime);
+        return result.isEmpty() ? null : result;
     }
 
 }
