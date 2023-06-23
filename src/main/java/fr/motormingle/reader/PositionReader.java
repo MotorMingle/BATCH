@@ -1,6 +1,7 @@
 package fr.motormingle.reader;
 
 import fr.motormingle.entity.Position;
+import fr.motormingle.entity.TreatmentStatus;
 import fr.motormingle.repository.PositionRepository;
 import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.StepExecutionListener;
@@ -26,9 +27,9 @@ public class PositionReader implements ItemReader<List<Position>>, StepExecution
 
     @Override
     public List<Position> read() {
-        List<Position> result = positionRepository.findAllById_Date(localDateTime);
-        System.err.println("PositionReader.read() result = " + result);
-        positionRepository.deleteAllById_Date(localDateTime);
+        List<Position> result = positionRepository.findAllById_DateAndTreatmentStatus(localDateTime, TreatmentStatus.NOT_TREATED);
+        result.forEach(r -> r.setTreatmentStatus(TreatmentStatus.MATCHED));
+        positionRepository.saveAll(result);
         return result.isEmpty() ? null : result;
     }
 

@@ -2,6 +2,9 @@ package fr.motormingle.processor;
 
 import com.uber.h3core.H3Core;
 import fr.motormingle.entity.*;
+import org.geotools.geometry.DirectPosition2D;
+import org.geotools.referencing.GeodeticCalculator;
+import org.opengis.referencing.operation.TransformException;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
 
@@ -38,6 +41,15 @@ public class PositionProcessor implements ItemProcessor<List<Position>, List<Enc
                 for (int j = i + 1; j < positions.size(); j++) {
                     Position position1 = positions.get(i);
                     Position position2 = positions.get(j);
+                    GeodeticCalculator calculator = new GeodeticCalculator();
+                    try {
+                        calculator.setStartingPosition(new DirectPosition2D(position1.getLatitude(), position1.getLongitude()));
+                        calculator.setDestinationPosition(new DirectPosition2D(position1.getLatitude(), position2.getLongitude()));
+                        double distance = calculator.getOrthodromicDistance();
+                        System.out.println("Distance: " + distance + " meters");
+                    } catch (TransformException e) {
+                        throw new RuntimeException(e);
+                    }
                     Encounter encounter = new Encounter();
                     UserPair userPair = new UserPair();
                     userPair.setUserId1(position1.getUser().getId());

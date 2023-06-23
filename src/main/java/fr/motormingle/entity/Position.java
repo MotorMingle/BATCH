@@ -24,4 +24,8 @@ public class Position {
     @Column(name = "longitude", nullable = false)
     private Double longitude;
 
+    @Column(name = "treatment_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private TreatmentStatus treatmentStatus;
+
 }
